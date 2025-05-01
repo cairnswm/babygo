@@ -49,7 +49,7 @@ const generateShades = (baseColor) => ({
 });
 
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   safelist: [
     ...[
       "primary",
@@ -79,66 +79,50 @@ export default {
     { pattern: /^xl:col-span-(1|2|3|4|5|6|7|8|9|10|11|12)$/ },
   ],
   theme: {
-    fontFamily: {
-      sans: [
-        "system-ui",
-        "-apple-system",
-        "Segoe UI",
-        "Roboto",
-        "Helvetica Neue",
-        "Arial",
-        "Noto Sans",
-        "sans-serif",
-        "Apple Color Emoji",
-        "Segoe UI Emoji",
-        "Segoe UI Symbol",
-        "Noto Color Emoji",
-      ],
-    },
     extend: {
-      backgroundColor: (theme) => {
-        const colors = {};
-        [
-          "primary",
-          "secondary",
-          "danger",
-          "success",
-          "warning",
-          "info",
-          "light",
-          "dark",
-        ].forEach((variant) => {
-          colors[`${variant}-100`] = theme(`colors.${variant}.100`);
-          colors[`${variant}-800`] = theme(`colors.${variant}.800`);
-        });
-        return colors;
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
-        primary: generateShades("#0d6efd"),
-        secondary: generateShades("#6c757d"),
-        success: generateShades("#198754"),
-        info: generateShades("#0dcaf0"),
-        warning: generateShades("#ffc107"),
-        danger: generateShades("#dc3545"),
-        light: generateShades("#f8f9fa"),
-        dark: generateShades("#212529"),
-      },
-      typography: (theme) => ({
-        DEFAULT: {
-          css: {
-            color: theme("colors.dark.500"),
-            a: {
-              color: theme("colors.primary.500"),
-              textDecoration: "underline",
-            },
-            h1: { fontWeight: "500" },
-            h2: { fontWeight: "500" },
-            h3: { fontWeight: "500" },
-            strong: { fontWeight: "600" },
-          },
+        primary: generateShades('#3b82f6'),
+        secondary: generateShades('#6c757d'),
+        success: generateShades('#10b981'),
+        danger: generateShades('#ef4444'),
+        warning: generateShades('#f59e0b'),
+        info: generateShades('#06b6d4'),
+        light: generateShades('#f9fafb'),
+        dark: generateShades('#111827'),
+        pink: {
+          50: '#fdf2f8',
+          100: '#fce7f3',
+          200: '#fbcfe8',
+          300: '#f9a8d4',
+          400: '#f472b6',
+          500: '#ec4899',
+          600: '#db2777',
+          700: '#be185d',
+          800: '#9d174d',
+          900: '#831843',
+          950: '#500724',
         },
-      }),
+        blue: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+          950: '#172554',
+        },
+      },
+      boxShadow: {
+        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+      },
     },
   },
-  plugins: [require("@tailwindcss/forms"), require("@tailwindcss/typography")],
+  plugins: [],
 };

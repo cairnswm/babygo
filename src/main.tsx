@@ -1,3 +1,4 @@
+import * as React from "react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
@@ -6,14 +7,26 @@ import { TenantProvider } from "./auth/context/TenantContext";
 import { AuthenticationProvider } from "./auth/context/AuthContext";
 import SettingsProvider from "./auth/context/SettingsContext.tsx";
 import { SubscriptionsProvider } from "./auth/context/SubscriptionsContext.tsx";
+import { MessageProvider } from "./context/MessageContext.tsx";
+import { ReportProvider } from "./context/ReportContext.tsx";
+import { ClassifiedProvider } from "./context/ClassifiedContext.tsx";
+import { UserRatingProvider } from "./context/UserRatingContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <TenantProvider applicationId="950ef1d9-c657-11ed-95d1-f0a654c38aa6">
+    <TenantProvider applicationId="bfe0b402-241c-11f0-a81e-1a220d8ac2c9">
       <AuthenticationProvider>
         <SettingsProvider>
           <SubscriptionsProvider>
-            <App />
+            <MessageProvider>
+              <ReportProvider>
+                <ClassifiedProvider>
+                  <UserRatingProvider>
+                    <App />
+                  </UserRatingProvider>
+                </ClassifiedProvider>
+              </ReportProvider>
+            </MessageProvider>
           </SubscriptionsProvider>
         </SettingsProvider>
       </AuthenticationProvider>

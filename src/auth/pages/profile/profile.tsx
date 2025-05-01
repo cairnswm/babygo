@@ -11,6 +11,7 @@ interface ProfilePageProps {
 const ProfilePage: React.FC<ProfilePageProps> = () => {
   
   const { user, saveUser } = useAuth();
+  const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -19,6 +20,7 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
 
   useEffect(() => {
     if (user) {
+      setUsername(user.username || '');
       setFirstName(user.firstname || '');
       setLastName(user.lastname || '');
     }
@@ -53,7 +55,7 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
     setSuccess('');
 
     try {
-      const updatedUser = { ...user, firstname: firstName, lastname: lastName } as User;
+      const updatedUser = { ...user, username: username, firstname: firstName, lastname: lastName } as User;
       const result = await saveUser(updatedUser);
 
       if (result?.errors) throw new Error('Failed to save user data');
@@ -71,6 +73,7 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
   };
 
   const handleCancel = () => {
+    setUsername(user?.username || '');
     setFirstName(user?.firstname || '');
     setLastName(user?.lastname || '');
     setIsEditing(false);
@@ -79,8 +82,7 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
   };
 
   return (
-    <Container>
-      <Navigation />
+    <div className="pt-24 pb-12 px-4">
       <div className="max-w-2xl mx-auto mt-2">
         <div className="flex flex-col items-center mb-6">
             <AvatarUpload user={user} />
@@ -108,6 +110,16 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium">User Name</label>
+            <input
+              type="text"
+              value={username || ''}  
+              className={`w-full border rounded p-2 ${!isEditing && "bg-dark-100"}`}
+              onChange={(e) => setUsername(e.target.value)}
+              disabled={!isEditing}
+            />
+          </div>
           <div>
             <label className="block text-sm font-medium">First Name</label>
             <input
@@ -155,7 +167,7 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
           Click on the profile picture to change your avatar
         </p>
       </div>
-    </Container>
+    </div>
   );
 };
 

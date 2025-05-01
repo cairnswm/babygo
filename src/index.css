@@ -2,17 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
-h1 {
-  @apply text-3xl font-bold;
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply text-gray-800 bg-white;
+  }
 }
 
-.dropdownmenu {
-  z-index: 1050;
+@layer utilities {
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .animate-bounce-slow {
+    animation: bounce 3s infinite;
+  }
 }
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(-2deg);
+  }
+}
+
 
 @layer components {
   .btn {
@@ -173,31 +202,31 @@ h1 {
     @apply flex flex-col flex-grow-0 flex-shrink-0;
   }
 
-  .col-span-1 {
+  .col-1 {
     @apply w-1/12;
   }
 
-  .col-span-2 {
+  .col-2 {
     @apply w-2/12;
   }
 
-  .col-span-3 {
+  .col-3 {
     @apply w-3/12;
   }
 
-  .col-span-4 {
+  .col-4 {
     @apply w-4/12;
   }
 
-  .col-span-5 {
+  .col-5 {
     @apply w-5/12;
   }
 
-  .col-span-6 {
+  .col-6 {
     @apply w-6/12;
   }
 
-  .col-span-7 {
+  .col-7 {
     @apply w-7/12;
   }
 
@@ -205,19 +234,19 @@ h1 {
     @apply w-8/12;
   }
 
-  .col-span-9 {
+  .col-9 {
     @apply w-9/12;
   }
 
-  .col-span-10 {
+  .col-10 {
     @apply w-10/12;
   }
 
-  .col-span-11 {
+  .col-11 {
     @apply w-11/12;
   }
 
-  .col-span-12 {
+  .col-12 {
     @apply w-full;
   }
 

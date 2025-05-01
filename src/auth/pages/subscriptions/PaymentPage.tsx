@@ -63,8 +63,8 @@ const Payment: React.FC<PaymentProps> = ({
   };
 
   return (
-    <Container>
-      <div className="p-2">
+
+    <div className="pt-24 pb-12 px-4">
         <h2 className="text-center text-2xl font-bold mb-4">Make Payment</h2>
 
         {error && (
@@ -126,7 +126,6 @@ const Payment: React.FC<PaymentProps> = ({
         <PayGate onGetOrder={handleGetOrder} onPaid={handlePaymentSuccess} />
         <Button variant="secondary" className="mt-2 w-full" to="/home">Cancel</Button>
       </div>
-    </Container>
   );
 };
 

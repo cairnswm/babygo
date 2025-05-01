@@ -1,25 +1,22 @@
 import React from 'react';
+import Hero from './components/Hero';
+import Features from './components/Features';
+import Pricing from './components/Pricing';
+import Testimonials from './components/Testimonials';
+import CTA from './components/CTA';
 import { accessElf } from '../../auth/utils/accessElf';
-import HeroSection from './components/HeroSection';
-import FeaturesSection from './components/FeaturesSection';
-import AboutUsSection from './components/AboutUsSection';
-import ServicesSection from './components/ServicesSection';
-import ContactUsSection from './components/ContactUsSection';
-import PricingSection from './components/PricingSection';
 
-function LandingPage() {
-  accessElf.track('LandingPage');
-
+const LandingPage: React.FC = () => {
+  accessElf.track('Landing Page');
   return (
-    <div className="min-h-screen bg-gray-50">
-      <HeroSection />
-      <FeaturesSection />
-      <PricingSection />
-      <AboutUsSection />
-      <ServicesSection />
-      <ContactUsSection />
+    <div>
+      <Hero />
+      <Features />
+      <Pricing />
+      <Testimonials />
+      <CTA />
     </div>
   );
-}
+};
 
 export default LandingPage;

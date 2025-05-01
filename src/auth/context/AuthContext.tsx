@@ -17,6 +17,7 @@ import { REACT_APP_AUTH_API } from "../../env";
 
 export type User = {
   email: string;
+  username?: string;
   lastname: string;
   firstname: string;
   id: string;
@@ -122,7 +123,7 @@ const AuthenticationProvider: React.FC<AuthenticationProviderProps> = ({
           lastname: data.lastname,
           firstname: data.firstname,
           id: data.id,
-          name: `${data.firstname} ${data.lastname}`,
+          name: `${data.firstname ?? ""} ${data.lastname ??""}`,
           picture: data.avatar,
           permissions: data.permissions,
           mastertoken: data.mastertoken,

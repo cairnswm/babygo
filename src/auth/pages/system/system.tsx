@@ -12,8 +12,8 @@ function SystemPage() {
     const { settings, featureFlags } = useSettings();
 
   return (
-    <div className="flex flex-col w-full bg-white">
-      <Navigation />
+
+    <div className="pt-24 pb-12 px-4">
       <div className="flex flex-col items-center px-4 mt-4">
         <h1 className="text-2xl font-bold">Application Params</h1>
         <ApplicationParamsTable params={params} />

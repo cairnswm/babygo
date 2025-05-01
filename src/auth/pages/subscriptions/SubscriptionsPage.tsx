@@ -10,9 +10,8 @@ const SubscriptionsPage = () => {
   accessElf.track("SubscriptionsPage");
 
   return (
-    <div className="flex flex-col w-full bg-white">
-      <Navigation />
-      
+
+    <div className="pt-24 pb-12 px-4">
 
       <div className="flex justify-end px-4 mt-4">
         <button

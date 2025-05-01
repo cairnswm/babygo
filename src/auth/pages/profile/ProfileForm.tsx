@@ -2,6 +2,7 @@ import React from 'react';
 
 interface ProfileFormProps {
   user: { email?: string } | null;
+  username: string;
   firstName: string;
   lastName: string;
   isEditing: boolean;
@@ -14,6 +15,7 @@ interface ProfileFormProps {
 
 const ProfileForm: React.FC<ProfileFormProps> = ({ 
   user,
+  username,
   firstName,
   lastName,
   isEditing,
