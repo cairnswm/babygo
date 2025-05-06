@@ -162,7 +162,7 @@ function generateClassifiedAds(count: number): ClassifiedAd[] {
     date.setDate(date.getDate() - Math.floor(Math.random() * 30));
     
     // Make some ads priority (approximately 10%)
-    const isPriority = Math.random() < 0.1;
+    const priority = Math.random() < 0.1;
     
     // Random location
     const location = locations[Math.floor(Math.random() * locations.length)];
@@ -221,7 +221,7 @@ function generateClassifiedAds(count: number): ClassifiedAd[] {
       images,
       location,
       posted_date: date.toISOString(),
-      isPriority,
+      priority,
       userId,
       favorite: categoryId === '4',
       status: 'available' // All demo data is available by default
@@ -230,8 +230,8 @@ function generateClassifiedAds(count: number): ClassifiedAd[] {
   
   // Sort: priority ads first, then by date (newest first)
   return ads.sort((a, b) => {
-    if (a.isPriority && !b.isPriority) return -1;
-    if (!a.isPriority && b.isPriority) return 1;
+    if (a.priority && !b.priority) return -1;
+    if (!a.priority && b.priority) return 1;
     return new Date(b.posted_date).getTime() - new Date(a.posted_date).getTime();
   });
 }

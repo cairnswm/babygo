@@ -64,7 +64,7 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
   async function handleUploadSuccess(response: any) {
     try {
       if (onUploadSuccess) {
-        await onUploadSuccess(response);
+        await onUploadSuccess(response.filename);
       }
     } finally {
       setIsUploading(false);

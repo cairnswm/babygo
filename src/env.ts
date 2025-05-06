@@ -6,6 +6,7 @@ let FILES = "https://cairnsgames.co.za/files/";
 let FLAGS = "https://cairnsgames.co.za/php/flags/";
 let PAYWEB3 = "http://cairnsgames.co.za/php/payweb3/";
 let SUBSCRIPTIONS = "http://cairnsgames.co.za/php/subscriptions/";
+let BABYGO = "http://babygo.co.za/php/";
 
 if (typeof process !== "undefined" && process?.env) {
   TENANT = process.env.REACT_APP_TENANT_API;
@@ -16,10 +17,12 @@ if (typeof process !== "undefined" && process?.env) {
   FLAGS = process.env.REACT_APP_FLAGS_API;
   PAYWEB3 = process.env.REACT_APP_PAYWEB3_API;
   SUBSCRIPTIONS = process.env.REACT_APP_SUBSCRIPTIONS_API;
+  BABYGO = process.env.REACT_APP_BABYGO_API;
 }
 
 if (window.location.hostname === "localhost") {
   // SUBSCRIPTIONS = "http://localhost/cairnsgames/php/subscriptions/";
+  BABYGO = "http://localhost/babygo/php/";
 }
 
 export const REACT_APP_TENANT_API = TENANT;
@@ -30,3 +33,4 @@ export const REACT_APP_FILES = FILES;
 export const REACT_APP_PAYWEB3_API = PAYWEB3;
 export const REACT_APP_SUBSCRIPTIONS_API = SUBSCRIPTIONS;
 export const REACT_APP_FLAGS_API = FLAGS;
+export const REACT_APP_BABYGO_API = BABYGO;

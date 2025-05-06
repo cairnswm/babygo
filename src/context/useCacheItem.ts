@@ -7,6 +7,10 @@ export function useCachedItem<T>(source: FetchSource<T>) {
 
   const fetchItem = async (id: number | string): Promise<T> => {
     const key = String(id);
+    console.log("find item", key, cache[key]);
+    if (id === null || id === undefined) {
+      return undefined;
+    }
     if (cache[key]) return cache[key];
 
     let item: T;

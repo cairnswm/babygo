@@ -29,11 +29,12 @@ include_once "./functions/applicationreports.php";
 
 
 // Define the configurations
-$accessTrackerConfig = [
+$babyGoConfig = [
     "adverts" => [
         "tablename" => "adverts",
         "key" => "id",
         "select" => "getAdverts",
+        "create" => ["title", "description", "price", "item_condition", "category", "images", "location", "posted_date", "expiry_date", "priority", "premium_expiry_date", "views", "tags", "user_id", "status"],
     ],
     "user" => [
         "tablename" => "adverts",
@@ -55,196 +56,28 @@ $accessTrackerConfig = [
             ],
         ]
     ],
-
-    "application" => [
-        "tablename" => "applications",
+    "messages" => [
+        "tablename" => "messages",
         "key" => "id",
-        "select" => ["id", "user_id", "name", "api_key", "created_at", "modified_at"],
-        "create" => ["user_id", "name", "api_key"],
-        "update" => ["name"],
-        "delete" => true,
-        "beforeselect" => "",
-        "beforecreate" => "",
-        "beforeupdate" => "",
-        "beforedelete" => "",
+        "select" => "getMyMessages",
+        "create" => ["ad_id", "from_user_id", "to_user_id", "content", "read_flag", "reply_to_message_id"],
+        "beforecreate" => "createMessage",
         "subkeys" => [
-            "events" => [
-                "tablename" => "events",
-                "key" => "application_id",
-                "select" => "getEvents",
-                "beforeselect" => ""
+            "read" => [
+                "tablename" => "messages",
+                "key" => "id",
+                "select" => "readMail",
             ],
-            "analytics" => [
-                "tablename" => "analytics",
-                "key" => "application_id",
-                "select" => ["id", "application_id", "date", "total_visits", "unique_visitors", "avg_session_duration", "views_in_order", "latest_views", "views_per_day", "created_at", "modified_at"],
-                "beforeselect" => ""
-            ],
-            "users" => [
-                "tablename" => "application_users",
-                "key" => "application_id",
-                "select" => ["id", "application_id", "user_id", "email", "firstname", "lastname", "role", "created_at", "modified_at"],
-                "beforeselect" => ""
-            ],
-            "invitations" => [
-                "tablename" => "invitations",
-                "key" => "application_id",
-                "select" => ["id", "application_id", "email", "role", "token", "accepted", "sent_at", "accepted_at", "created_at", "modified_at"],
-                "beforeselect" => ""
-            ],
-            "invites" => [
-                "tablename" => "invitations",
-                "key" => "application_id",
-                "select" => ["id", "application_id", "user_id", "email", "role", "token", "accepted", "sent_at", "accepted_at", "created_at", "modified_at"],
-                "beforeselect" => ""
-            ],
-            "site" => [
-                "tablename" => "pages",
-                "key" => "application_id",
-                "select" => "getSiteEvents",
-                "beforeselect" => ""
-            ],
-            "sitebyday" => [
-                "tablename" => "pages",
-                "key" => "application_id",
-                "select" => "getSiteEventsByDay",
-                "beforeselect" => ""
-            ],
-            "page" => [
-                "tablename" => "pages",
-                "key" => "application_id",
-                "select" => "getPageEvents",
-                "beforeselect" => ""
-            ],
-            "pagebyday" => [
-                "tablename" => "pages",
-                "key" => "application_id",
-                "select" => "getPageEventsByDay",
-                "beforeselect" => ""
-            ],
-            "item" => [
-                "tablename" => "pages",
-                "key" => "application_id",
-                "select" => "getItemEvents",
-                "beforeselect" => ""
-            ],
-            "itembyday" => [
-                "tablename" => "pages",
-                "key" => "application_id",
-                "select" => "getItemEventsByDay",
-                "beforeselect" => ""
-            ],
-            "bycountry" => [
-                "tablename" => "pages",
-                "key" => "application_id",
-                "select" => "getMostActiveCountries",
-                "beforeselect" => ""
-            ]
         ]
     ],
 
-    "event" => [
-        "tablename" => "events",
-        "key" => "id",
-        "select" => ["id", "application_id", "event_date", "ip_address", "page", "item_id", "type", "data", "created_at", "modified_at"],
-        "create" => ["application_id", "event_date", "ip_address", "page", "item_id", "type", "data"],
-        "update" => [],
-        "delete" => false,
-        "beforeselect" => "",
-        "beforecreate" => "",
-        "beforeupdate" => "",
-        "beforedelete" => ""
-    ],
-
-    "analytics" => [
-        "tablename" => "analytics",
-        "key" => "id",
-        "select" => ["id", "application_id", "date", "total_visits", "unique_visitors", "avg_session_duration", "views_in_order", "latest_views", "views_per_day", "created_at", "modified_at"],
-        "create" => ["application_id", "date", "total_visits", "unique_visitors", "avg_session_duration", "views_in_order", "latest_views", "views_per_day"],
-        "update" => false,
-        "delete" => false,
-        "beforeselect" => "",
-        "beforecreate" => "",
-        "beforeupdate" => "",
-        "beforedelete" => ""
-    ],
-
-    "location" => [
-        "tablename" => "ip_geolocation_cache",
-        "key" => "id",
-        "select" => ["id", "ip_address", "country", "region", "city", "last_updated", "created_at", "modified_at"],
-        "create" => ["ip_address", "country", "region", "city", "last_updated"],
-        "update" => ["country", "region", "city", "last_updated"],
-        "delete" => false,
-        "beforeselect" => "",
-        "beforecreate" => "",
-        "beforeupdate" => "",
-        "beforedelete" => ""
-    ],
-    "campaign" => [
-        "tablename" => "campaigns",
-        "key" => "id",
-        "select" => ["id", "name", "user_id", "application_id", "created_at", "modified_at"],
-        "create" => ["name", "user_id", "application_id"],
-        "update" => ["name"],
-        "delete" => true,
-        "beforeselect" => "",
-        "beforecreate" => "",
-        "beforeupdate" => "",
-        "beforedelete" => "",
-        "subkeys" => [
-            "links" => [
-                "tablename" => "links",
-                "key" => "campaign_id",
-                "select" => "getCampaignClicksPerLink",
-            ],
-            "clicks" => [
-                "tablename" => "clicks",
-                "key" => "campaign_id",
-                "select" => "getClicksForCampaign",
-            ],
-        ]
-    ],
-    "link" => [
-        "tablename" => "links",
-        "key" => "id",
-        "select" => ["id", "user_id", "campaign_id", "short_code", "destination", "title", "expires_at"],
-        "create" => ["campaign_id", "short_code", "destination", "title", "expires_at"],
-        "update" => ["short_code", "destination", "title", "expires_at"],
-        "delete" => true,
-        "beforeselect" => "",
-        "beforecreate" => "",
-        "beforeupdate" => "",
-        "beforedelete" => "",
-        "subkeys" => [
-            "visits" => [
-                "tablename" => "clicks",
-                "key" => "link_id",
-                "select" => ["id", "link_id", "ip_address", "user_agent", "referer", "created_at"],
-            ],
-            "clicks" => [
-                "tablename" => "clicks",
-                "key" => "link_id",
-                "select" => "getDailyClicksPerLink",
-            ],
-            "country" => [
-                "tablename" => "clicks",
-                "key" => "link_id",
-                "select" => "getCountryForLinks",
-            ],
-        ]
-    ],
     "post" => [
-        "createApplication" => "insertApplication",
-        "decodeApiKey" => "reverseApiKey",
-        "deleteApplication" => "deleteApplication",
-        "insertLink" => "insertLink",
-        "linkClicksByDate" => "getDailyClicksPerLink"
+        "endpoint" => "functionName"
 
     ]
 ];
 
-runAPI($accessTrackerConfig);
+runAPI($babyGoConfig);
 
 function reverseApiKey($fields)
 {
@@ -392,25 +225,68 @@ function getMyMessages()
 {
     global $gapiconn, $userid;
     $query = "SELECT 
-        m.ad_id,
-        a.title AS subject,
-        JSON_ARRAYAGG(
-            JSON_OBJECT(
-                'id', m.id,
-                'from_user_id', m.from_user_id,
-                'to_user_id', m.to_user_id,
-                'content', m.content,
-                'created_at', m.created_at,
-                'read_flag', m.read_flag,
-                'reply_to_message_id', m.reply_to_message_id
-            )
-        ) AS messages
-    FROM messages m
-    JOIN adverts a ON m.ad_id = a.id
-    WHERE m.from_user_id = ? OR m.to_user_id = ?
-    GROUP BY m.ad_id, a.title
-    ORDER BY MAX(m.created_at) DESC;
+    m.ad_id,
+    a.title AS subject,
+    CASE 
+        WHEN m.from_user_id = ? THEN m.to_user_id
+        ELSE m.from_user_id
+    END AS participant_user_id,
+    JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'id', m.id,
+            'from_user_id', m.from_user_id,
+            'to_user_id', m.to_user_id,
+            'content', m.content,
+            'created_at', m.created_at,
+            'read_flag', m.read_flag,
+            'reply_to_message_id', m.reply_to_message_id
+        )
+    ) AS messages
+FROM messages m
+JOIN adverts a ON m.ad_id = a.id
+WHERE m.from_user_id = ? OR m.to_user_id = ?
+GROUP BY m.ad_id, a.title, participant_user_id
+ORDER BY MAX(m.created_at) DESC;
     ";
-    $messages = executeSQL($query, [$userid, $userid], ["JSON" => "messages"]);
+    $messages = executeSQL($query, [$userid, $userid, $userid], ["JSON" => "messages"]);
     return $messages;
+}
+
+function createMessage($config, $fields)
+{
+    global $userid;
+    $fields["from_user_id"] = $userid;
+    return [$config, $fields];
+}
+
+function readMail($config, $fields)
+{
+
+    $id = $config["where"]["id"];
+    global $gapiconn;
+
+    // Fetch the ad_id for the given message id
+    $query = "SELECT ad_id FROM messages WHERE id = ?";
+
+    $stmt = $gapiconn->prepare($query);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $stmt->bind_result($ad_id);
+    $row = $stmt->fetch() ? ['ad_id' => $ad_id] : null;
+    $stmt->close();
+
+    if (!$row) {
+        throw new Exception("Message not found.");
+    }
+
+    $ad_id = $row['ad_id'];
+
+    // Update all messages for the current ad to mark them as read
+    $updateQuery = "UPDATE messages SET read_flag = 1 WHERE ad_id = ? and id <= ?";
+    $stmt = $gapiconn->prepare($updateQuery);
+    $stmt->bind_param("ii", $ad_id, $id);
+    $stmt->execute();
+    $stmt->close();
+
+    return getMyMessages();
 }

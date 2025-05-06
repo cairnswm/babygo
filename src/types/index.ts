@@ -8,12 +8,12 @@ export interface ClassifiedAd {
   images: string[];
   location: string;
   posted_date: string;
-  isPriority: boolean; // premium
-  premiumExpiryDate?: string; // set only if isPriority = true, default 7 days
+  priority: boolean; // premium
+  premiumExpiryDate?: string; // set only if priority = true, default 7 days
   expiryDate: string; // default 30 days from posted_date
   views: number;
   tags?: string[];
-  userId: string;
+  user_id: string;
   status: 'draft' | 'available' | 'sold' | 'removed';
   favorite: boolean;
 }

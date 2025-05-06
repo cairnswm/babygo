@@ -85,7 +85,7 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
     <div className="pt-24 pb-12 px-4">
       <div className="max-w-2xl mx-auto mt-2">
         <div className="flex flex-col items-center mb-6">
-            <AvatarUpload user={user} />
+            <AvatarUpload user={user} onUploadSuccess={handleUploadSuccess}/>
             <input
               type="file"
               className="hidden"

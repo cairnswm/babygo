@@ -65,8 +65,8 @@ const ClassifiedList: React.FC = () => {
     // Apply sorting
     .sort((a, b) => {
       // Priority ads always come first
-      if (a.isPriority && !b.isPriority) return -1;
-      if (!a.isPriority && b.isPriority) return 1;
+      if (a.priority && !b.priority) return -1;
+      if (!a.priority && b.priority) return 1;
       
       // Then apply selected sort
       switch (sortBy) {

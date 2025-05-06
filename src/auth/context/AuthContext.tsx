@@ -120,6 +120,7 @@ const AuthenticationProvider: React.FC<AuthenticationProviderProps> = ({
         settoken(data.token);
         const userDetails: User = {
           email: data.email,
+          username: data.username,
           lastname: data.lastname,
           firstname: data.firstname,
           id: data.id,

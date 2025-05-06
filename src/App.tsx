@@ -14,7 +14,7 @@ import PaidSubscriptionsPage from "./auth/pages/subscriptions/PaidSubscriptionsP
 import { useAuth } from "./auth/hooks/useAuth";
 import CreateAdPage from "./pages/CreateAdPage";
 import EditAdPage from "./pages/EditAdPage";
-import AdDetailsPage from "./pages/AdDetailsPage";
+import AdDetailsPage from "./pages/AdDetails/AdDetailsPage";
 import PricingPage from "./pages/PricingPage";
 import UserRatingsPage from "./pages/UserRatingsPage";
 import MessagesPage from "./pages/MessagesPage";
@@ -71,7 +71,8 @@ function App() {
             <Route path="/ad/:id" element={<AdDetailsPage />} />
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/user/:userId/ratings" element={<UserRatingsPage />} />
-            <Route path="/messages" element={user ? <MessagesPage /> : <LoginPage />} />
+            <Route path="/messages/:adId?" element={user ? <MessagesPage /> : <LoginPage />} />
+            <Route path="/messages/:adId/:participantId" element={user ? <MessagesPage /> : <LoginPage />} />
             <Route path="/my-adverts" element={user ? <MyAdvertsPage /> : <LoginPage />} />
             <Route path="/admin/reports" element={user ? <AdminReportsPage /> : <LoginPage />} />
             <Route path="*" element={<HomePage />} />

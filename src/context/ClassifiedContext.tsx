@@ -10,6 +10,8 @@ import { classifiedAds, categories, CURRENT_USER_ID } from "../data/mockData";
 import { useAuth } from "../auth/hooks/useAuth";
 import { useTenant } from "../auth/hooks/useTenant";
 import useCachedItem from "./useCacheItem";
+import { combineUrlAndPath } from "../auth/utils/combineUrlAndPath";
+import { REACT_APP_BABYGO_API, REACT_APP_TENANT_API } from "../env";
 
 interface ClassifiedContextType {
   ads: ClassifiedAd[];
@@ -30,6 +32,7 @@ interface ClassifiedContextType {
   myAdverts: ClassifiedAd[];
   isCurrentUserAd: (adId: string) => boolean;
   toggleFavorite: (id: string) => void;
+  getSeller: (id: number | string) => Promise<any>;
 }
 
 const ClassifiedContext = createContext<ClassifiedContextType | undefined>(
@@ -48,12 +51,15 @@ export const ClassifiedProvider: React.FC<{ children: ReactNode }> = ({
   const { tenant } = useTenant();
 
   const getSellerDetails = async (id: number | string) => {
-    return await fetch(`http://localhost/cairnsgames/php/tenant/api.php/user/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        APP_ID: tenant,
-      },
-    })
+    return await fetch(
+      combineUrlAndPath(REACT_APP_TENANT_API, `api.php/user/${id}`),
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          APP_ID: tenant,
+        },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         if (data.firstname && data.lastname) {
@@ -61,7 +67,7 @@ export const ClassifiedProvider: React.FC<{ children: ReactNode }> = ({
         } else {
           data.name = "User" + data.id;
         }
-        console.log("Cache: ", id, data)
+        console.log("Cache: ", id, data);
         return data;
       });
   };
@@ -70,16 +76,25 @@ export const ClassifiedProvider: React.FC<{ children: ReactNode }> = ({
   const headers = {
     Authorization: `Bearer ${token}`,
     APP_ID: tenant,
+    "Content-Type": "application/json",
   };
 
   useEffect(() => {
-    fetch(`http://localhost/babygo/php/api/api.php/user/${user.id}/adverts`, {
-      headers,
-    })
+    fetch(
+      combineUrlAndPath(
+        REACT_APP_BABYGO_API,
+        `api/api.php/user/${user.id}/adverts`
+      ),
+      {
+        headers,
+      }
+    )
       .then((res) => res.json())
       .then((data) => setMyAdverts(data));
-    fetch(`http://localhost/babygo/php/api/api.php/adverts`, { headers })
-      .then((res) => res.json())
+    fetch(combineUrlAndPath(REACT_APP_BABYGO_API, `api/api.php/adverts`), {
+      headers,
+    })
+      .then((res) => res.json(``))
       .then((data) => setAds(data));
   }, [user]);
 
@@ -135,15 +150,10 @@ export const ClassifiedProvider: React.FC<{ children: ReactNode }> = ({
     );
   };
 
-  // // Get user's own ads
-  // const getUserAds = () => {
-  //   return ads.filter(ad => ad.userId === CURRENT_USER_ID);
-  // };
-
   // Check if an ad belongs to the current user
   const isCurrentUserAd = (adId: string) => {
     const ad = ads.find((ad) => ad.id === adId);
-    return ad?.userId === CURRENT_USER_ID;
+    return ad?.userId === user?.id;
   };
 
   const toggleFavorite = (id: string) => {

@@ -18,15 +18,15 @@ createRoot(document.getElementById("root")!).render(
       <AuthenticationProvider>
         <SettingsProvider>
           <SubscriptionsProvider>
-            <MessageProvider>
-              <ReportProvider>
-                <ClassifiedProvider>
+            <ClassifiedProvider>
+              <MessageProvider>
+                <ReportProvider>
                   <UserRatingProvider>
                     <App />
                   </UserRatingProvider>
-                </ClassifiedProvider>
-              </ReportProvider>
-            </MessageProvider>
+                </ReportProvider>
+              </MessageProvider>
+            </ClassifiedProvider>
           </SubscriptionsProvider>
         </SettingsProvider>
       </AuthenticationProvider>

@@ -1,91 +1,107 @@
-import React, { useState } from 'react';
-import { useMessage } from '../context/MessageContext';
-import { useUserRating } from '../context/UserRatingContext';
-import { useClassified } from '../context/ClassifiedContext';
-import { ArrowLeft } from 'lucide-react';
-import { accessElf } from '../auth/utils/accessElf';
+import React, { useState, useEffect } from "react";
+import { useMessage, Conversation } from "../context/MessageContext";
+import { accessElf } from "../auth/utils/accessElf";
+import { combineUrlAndPath } from "../auth/utils/combineUrlAndPath";
+import { REACT_APP_FILES } from "../env";
+import Button from "../components/Button";
+import { useAuth } from "../auth/hooks/useAuth";
+import { useParams } from "react-router-dom";
 
 const MessagesPage: React.FC = () => {
-  const { messages, sendMessage, getUserMessages } = useMessage();
-  const { getUser } = useUserRating();
-  const { ads } = useClassified();
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [replyContent, setReplyContent] = useState('');
+  const { messages, getChatUser, sendMessage, markAsRead } = useMessage();
+  const { adId, participantId } = useParams<{
+    adId?: string;
+    participantId?: string;
+  }>();
+  const [replyContent, setReplyContent] = useState<string>("");
+  const { user } = useAuth();
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | undefined>();
 
-  accessElf.track("View Messages Page")
-
-  // Get unique users and their latest message
-  const userLatestMessages = [...new Set(messages.map(msg => 
-    msg.fromUserId === 'user-1' ? msg.toUserId : msg.fromUserId
-  ))].map(userId => {
-    const userMessages = getUserMessages(userId);
-    return {
-      userId,
-      latestMessage: userMessages[userMessages.length - 1]
-    };
-  });
-
-  const selectedUserMessages = selectedUserId ? getUserMessages(selectedUserId) : [];
-  const selectedUser = selectedUserId ? getUser(selectedUserId) : null;
-
-  const handleSendReply = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (selectedUserId && replyContent.trim()) {
-      // Get the latest message's adId to continue the conversation about the same item
-      const latestMessage = selectedUserMessages[selectedUserMessages.length - 1];
-      sendMessage(selectedUserId, latestMessage.adId, replyContent);
-      setReplyContent('');
-    }
+  const setActiveConversation = (adId: number, participantId: number) => {
+    const conversation = messages.find(
+      (ad) =>
+        ad.ad_id === adId && ad.participant_user_id === participantId
+    );
+    setSelectedConversation(conversation);
   };
 
-  const getAdTitle = (adId: string) => {
-    const ad = ads.find(ad => ad.id === adId);
-    return ad?.title || 'Unknown Item';
+  useEffect(() => {
+    if (selectedConversation?.messages?.length) {
+      console.log("Marking conversation read", selectedConversation);
+      const highestId = Math.max(...selectedConversation.messages.map((msg) => msg.id));
+      markAsRead(highestId);
+    }
+  }, [selectedConversation]);
+
+  useEffect(() => {
+    console.log("Ad ID:", adId, "Participant ID:", participantId);
+    if (adId && participantId) {
+      setActiveConversation(Number(adId), Number(participantId));
+    } else {
+      setSelectedConversation(undefined);
+    }
+  }, [adId, participantId]);
+
+  accessElf.track("MessagesPage");
+
+  const getUserName = (user) => {
+    if (!user) return "Unknown User";
+    return (
+      user.username || `${user.firstname} ${user.lastname}` || `User${user.id}`
+    );
+  };
+
+  const selectedChatUser =  getChatUser(selectedConversation?.participant_user_id);
+
+  const handleSendReply = () => {
+    if (replyContent.trim() && selectedAdId && selectedParticipantId) {
+      sendMessage(selectedParticipantId, selectedAdId, replyContent);
+      setReplyContent("");
+    }
   };
 
   return (
     <div className="pt-24 pb-12 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Messages</h1>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Users list */}
+          {/* Conversations List */}
           <div className="bg-white rounded-lg shadow-sm p-4">
             <h2 className="font-semibold mb-4">Conversations</h2>
             <div className="space-y-2">
-              {userLatestMessages.map(({ userId, latestMessage }) => {
-                const user = getUser(userId);
-                if (!user || !latestMessage) return null;
-                
-                const unreadCount = messages.filter(msg => 
-                  msg.fromUserId === userId && !msg.read
-                ).length;
-                
+              {messages.map((ad) => {
+                const firstMessage = ad.messages[0];
+                const chatUser = getChatUser(ad.participant_user_id);
+
                 return (
                   <button
-                    key={userId}
-                    onClick={() => setSelectedUserId(userId)}
-                    className={`w-full flex items-start p-3 rounded-lg transition ${
-                      selectedUserId === userId 
-                        ? 'bg-pink-50 text-pink-600' 
-                        : 'hover:bg-gray-50'
+                    key={ad.ad_id + "-" + ad.participant_user_id}
+                    onClick={() => { setSelectedConversation(ad); }}
+                    className={`w-full flex items-center p-3 rounded-lg transition ${
+                      selectedConversation?.ad_id === ad.ad_id && selectedConversation?.participant_user_id === ad.participant_user_id
+                        ? "bg-pink-50 text-pink-600"
+                        : "hover:bg-gray-50"
                     }`}
                   >
-                    <img
-                      src={user.avatar}
-                      alt={user.name}
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <div className="ml-3 text-left">
-                      <p className="font-medium">{user.name}</p>
-                      <p className="text-sm text-gray-600 line-clamp-1">
-                        Re: {getAdTitle(latestMessage.adId)}
+                    {chatUser?.avatar && (
+                      <img
+                        src={combineUrlAndPath(
+                          REACT_APP_FILES,
+                          chatUser.avatar
+                        )}
+                        alt={getUserName(chatUser)}
+                        className="w-10 h-10 rounded-full mr-3"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    )}
+                    <div className="text-left">
+                      <p className="font-medium">{ad.subject}</p>
+                      <p className="text-sm text-gray-600">
+                        {getUserName(chatUser)}
                       </p>
-                      {unreadCount > 0 && (
-                        <span className="text-sm text-pink-500">
-                          {unreadCount} new {unreadCount === 1 ? 'message' : 'messages'}
-                        </span>
-                      )}
                     </div>
                   </button>
                 );
@@ -93,56 +109,69 @@ const MessagesPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Messages */}
+          {/* Messages View */}
           <div className="md:col-span-2">
-            {selectedUser ? (
+            {selectedConversation ? (
               <div className="bg-white rounded-lg shadow-sm h-[600px] flex flex-col">
                 {/* Header */}
                 <div className="p-4 border-b">
                   <div className="flex items-center">
                     <button
-                      onClick={() => setSelectedUserId(null)}
+                      onClick={() => {
+                        setSelectedConversation(undefined);
+                      }}
                       className="md:hidden mr-2 text-gray-600"
                     >
-                      <ArrowLeft size={20} />
+                      Back
                     </button>
-                    <img
-                      src={selectedUser.avatar}
-                      alt={selectedUser.name}
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <div className="ml-3">
-                      <p className="font-medium">{selectedUser.name}</p>
-                      {selectedUserMessages.length > 0 && (
-                        <p className="text-sm text-gray-600">
-                          Re: {getAdTitle(selectedUserMessages[0].adId)}
-                        </p>
-                      )}
+                    {selectedChatUser?.avatar && (
+                      <img
+                        src={combineUrlAndPath(
+                          REACT_APP_FILES,
+                          selectedChatUser.avatar
+                        )}
+                        alt={getUserName(selectedChatUser)}
+                        className="w-10 h-10 rounded-full mr-3"
+                      />
+                    )}
+                    <div>
+                      <p className="font-medium">
+                        {getUserName(selectedChatUser)}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {
+                          selectedConversation.subject
+                        }
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {selectedUserMessages.map(message => {
-                    const isCurrentUser = message.fromUserId === 'user-1';
+                  {selectedConversation.messages.map((message) => {
+                    const isCurrentUser = Number(message.from_user_id) === Number(user.id);
                     return (
                       <div
                         key={message.id}
-                        className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
+                        className={`flex ${
+                          isCurrentUser ? "justify-end" : "justify-start"
+                        }`}
                       >
                         <div
                           className={`max-w-[70%] rounded-lg p-3 ${
                             isCurrentUser
-                              ? 'bg-pink-500 text-white'
-                              : 'bg-gray-100 text-gray-800'
+                              ? "bg-pink-500 text-white"
+                              : "bg-gray-100 text-gray-800"
                           }`}
                         >
                           <p>{message.content}</p>
-                          <p className={`text-xs mt-1 ${
-                            isCurrentUser ? 'text-pink-100' : 'text-gray-500'
-                          }`}>
-                            {new Date(message.createdAt).toLocaleTimeString()}
+                          <p
+                            className={`text-xs mt-1 ${
+                              isCurrentUser ? "text-pink-100" : "text-gray-500"
+                            }`}
+                          >
+                            {new Date(message.created_at).toLocaleTimeString()}
                           </p>
                         </div>
                       </div>
@@ -150,29 +179,25 @@ const MessagesPage: React.FC = () => {
                   })}
                 </div>
 
-                {/* Reply form */}
-                <form onSubmit={handleSendReply} className="p-4 border-t">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={replyContent}
-                      onChange={(e) => setReplyContent(e.target.value)}
-                      placeholder="Type your message..."
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                    />
-                    <button
-                      type="submit"
-                      disabled={!replyContent.trim()}
-                      className="px-6 py-2 bg-pink-500 text-white rounded-full hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                    >
-                      Send
-                    </button>
-                  </div>
-                </form>
+                {/* Reply Input */}
+                <div className="p-4 border-t flex items-center">
+                  <input
+                    type="text"
+                    value={replyContent}
+                    onChange={(e) => setReplyContent(e.target.value)}
+                    placeholder="Type your reply..."
+                    className="flex-1 border rounded-lg p-2 mr-2"
+                  />
+                  <Button variant="primary" onClick={handleSendReply}>
+                    Send
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-                <p className="text-gray-500">Select a conversation to view messages</p>
+                <p className="text-gray-500">
+                  Select a conversation to view messages
+                </p>
               </div>
             )}
           </div>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useClassified } from "../context/ClassifiedContext";
-import { useUserRating } from "../context/UserRatingContext";
-import { useMessage } from "../context/MessageContext";
-import { useReport } from "..//context/ReportContext";
+import { useClassified } from "../../context/ClassifiedContext";
+import { useUserRating } from "../../context/UserRatingContext";
+import { useMessage } from "../../context/MessageContext";
+import { useReport } from "../../context/ReportContext";
 import {
   Heart,
   MapPin,
@@ -17,14 +17,15 @@ import {
   MessageSquare,
   Flag,
 } from "lucide-react";
-import UserRatings from "./shared/UserRatings";
-import { accessElf } from "../auth/utils/accessElf";
-import { useAuth } from "../auth/hooks/useAuth";
-import { useScrollToTop } from "../hooks/useScrollToTop";
-import { ClassifiedAd } from "../types";
-import { useCachedItem } from "../context/useCacheItem";
-import { REACT_APP_FILES } from "../env";
-import { combineUrlAndPath } from "../auth/utils/combineUrlAndPath";
+import UserRatings from "../shared/UserRatings";
+import { accessElf } from "../../auth/utils/accessElf";
+import { useAuth } from "../../auth/hooks/useAuth";
+import { useScrollToTop } from "../../hooks/useScrollToTop";
+import { ClassifiedAd } from "../../types";
+import { useCachedItem } from "../../context/useCacheItem";
+import { REACT_APP_FILES } from "../../env";
+import { combineUrlAndPath } from "../../auth/utils/combineUrlAndPath";
+import MessageIcon from "../home/MessageIcon";
 
 const AdDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -33,7 +34,7 @@ const AdDetailsPage: React.FC = () => {
   const navigate = useNavigate();
   const { ads, deleteAd, isCurrentUserAd, getSeller } = useClassified();
   const { getUser } = useUserRating();
-  const { sendMessage } = useMessage();
+  const { sendMessage, getConversationsForAd } = useMessage();
   const { addReport } = useReport();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -46,6 +47,9 @@ const AdDetailsPage: React.FC = () => {
   const [seller, setSeller] = useState();
 
   const [ad, setAd] = useState<ClassifiedAd | undefined>();
+
+  const conversations = getConversationsForAd(Number(id));
+  const hasMessages = conversations && conversations.length > 0;
 
   const fetchSellerData = async (userId: string) => {
     const sellerData = await getSeller(userId);
@@ -93,7 +97,7 @@ const AdDetailsPage: React.FC = () => {
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (messageContent.trim()) {
-      sendMessage(ad.userId, ad.id, messageContent);
+      sendMessage(ad.user_id, ad.id, messageContent);
       setMessageContent("");
       setShowMessageModal(false);
     }
@@ -137,13 +141,13 @@ const AdDetailsPage: React.FC = () => {
     );
   }
 
-  const sellerDisplayName = seller?.username 
-  ? seller.username 
-  : seller?.firstname && seller?.lastname 
-  ? `${seller.firstname} ${seller.lastname}` 
-  : seller?.id 
-  ? `User${seller.id}` 
-  : "Unknown";
+  const sellerDisplayName = seller?.username
+    ? seller.username
+    : seller?.firstname && seller?.lastname
+    ? `${seller.firstname} ${seller.lastname}`
+    : seller?.id
+    ? `User${seller.id}`
+    : "Unknown";
 
   return (
     <>
@@ -182,7 +186,8 @@ const AdDetailsPage: React.FC = () => {
                 </button>
               </div>
             ) : (
-              user && (
+              user &&
+              user?.id !== seller?.id && (
                 <button
                   onClick={() => setShowReportModal(true)}
                   className="p-2 text-gray-500 hover:bg-gray-50 rounded-full transition flex items-center gap-2"
@@ -248,12 +253,17 @@ const AdDetailsPage: React.FC = () => {
                 <span className="text-3xl font-bold text-pink-600">
                   R{ad.price}
                 </span>
-                <button className="p-2 rounded-full hover:bg-pink-50 transition">
-                  <Heart
-                    size={24}
-                    className="text-gray-600 hover:text-pink-500"
-                  />
-                </button>
+                <div className="flex items-center gap-4">
+                  <div className="flex px-4 py-2 rounded-full transition">
+                    <MessageIcon adId={ad.id} title="" staticPosition />
+                  </div>
+                  <button className="p-2 rounded-full hover:bg-pink-50 transition flex items-center justify-center">
+                    <Heart
+                      size={24}
+                      className="text-gray-600 hover:text-pink-500"
+                    />
+                  </button>
+                </div>
               </div>
 
               <div className="flex flex-wrap gap-2">
@@ -276,7 +286,7 @@ const AdDetailsPage: React.FC = () => {
                   <Tag size={14} className="mr-1" />
                   {ad.category}
                 </span>
-                {ad.isPriority && (
+                {ad.priority && (
                   <span className="text-sm bg-gradient-to-r from-pink-500 to-blue-500 text-white px-3 py-1 rounded-full">
                     Priority Ad
                   </span>
@@ -295,33 +305,42 @@ const AdDetailsPage: React.FC = () => {
                 </h3>
                 {seller && (
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
+                    <div className="relative flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <img
-                          src={combineUrlAndPath(REACT_APP_FILES, seller.avatar)}
-                          alt={sellerDisplayName}
-                          className="w-10 h-10 rounded-full"
-                        />
+                        {seller.avatar && (
+                          <img
+                            src={combineUrlAndPath(
+                              REACT_APP_FILES,
+                              seller.avatar
+                            )}
+                            alt={sellerDisplayName}
+                            className="w-10 h-10 rounded-full"
+                          />
+                        )}
                         <div>
                           <p className="font-medium">{sellerDisplayName}</p>
                           <UserRatings userId={seller.id} />
                         </div>
                       </div>
-                      <button
-                        onClick={() => setShowMessageModal(true)}
-                        className={`${
-                          user ? "bg-pink-500 hover:bg-pink-600" : "bg-gray-300"
-                        } text-white px-4 py-2 rounded-full transition`}
-                        disabled={!user || isCurrentUserAd(ad.id)}
-                      >
-                        <div className="flex items-center gap-2 ">
-                          <MessageSquare size={18} />
-                          Message
-                        </div>
-                        {user ? null : (
-                          <p className="text-xs">Login to message</p>
-                        )}
-                      </button>
+                      {user && user?.id !== seller?.id && (
+                        <button
+                          onClick={() => setShowMessageModal(true)}
+                          className={`${
+                            user
+                              ? "bg-pink-500 hover:bg-pink-600"
+                              : "bg-gray-300"
+                          } text-white px-4 py-2 rounded-full transition`}
+                          disabled={!user || isCurrentUserAd(ad.id)}
+                        >
+                          <div className="flex items-center gap-2 ">
+                            <MessageSquare size={18} />
+                            Message
+                          </div>
+                          {user ? null : (
+                            <p className="text-xs">Login to message</p>
+                          )}
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
@@ -379,7 +398,9 @@ const AdDetailsPage: React.FC = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Message {sellerDisplayName}</h3>
+              <h3 className="text-xl font-semibold">
+                Message {sellerDisplayName}
+              </h3>
               <button
                 onClick={() => setShowMessageModal(false)}
                 className="text-gray-500 hover:text-gray-700"

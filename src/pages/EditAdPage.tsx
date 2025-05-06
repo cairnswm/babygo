@@ -18,7 +18,7 @@ const EditAdPage: React.FC = () => {
     category: categories[0].name,
     location: '',
     images: [],
-    isPriority: false,
+    priority: false,
     status: 'available'
   });
 
@@ -148,8 +148,8 @@ const EditAdPage: React.FC = () => {
             <input
               type="checkbox"
               id="priority"
-              checked={formData.isPriority}
-              onChange={(e) => setFormData({ ...formData, isPriority: e.target.checked })}
+              checked={formData.priority}
+              onChange={(e) => setFormData({ ...formData, priority: e.target.checked })}
               className="h-4 w-4 text-pink-500 focus:ring-pink-500 border-gray-300 rounded"
             />
             <label htmlFor="priority" className="ml-2 block text-sm text-gray-700">
