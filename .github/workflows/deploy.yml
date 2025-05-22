@@ -23,10 +23,15 @@ jobs:
         run: |
           echo "<?php" > cairnsgamesconfig.php
           echo "" >> cairnsgamesconfig.php
-          echo "\$host = '${{ secrets.CG_MYSQL_HOST }}';" >> cairnsgamesconfig.php
-          echo "\$user = '${{ secrets.CG_MYSQL_USERNAME }}';" >> cairnsgamesconfig.php
-          echo "\$password = '${{ secrets.CG_MYSQL_PASSWORD }}';" >> cairnsgamesconfig.php
-          echo "\$database = '${{ secrets.CG_MYSQL_DATABASE }}';" >> cairnsgamesconfig.php
+          echo "\$cairnsgamesconfig = array(" >> cairnsgamesconfig.php
+          echo "    \"server\" => '${{ secrets.CG_MYSQL_HOST }}'," >> cairnsgamesconfig.php
+          echo "    \"username\" => '${{ secrets.CG_MYSQL_USERNAME }}'," >> cairnsgamesconfig.php
+          echo "    \"password\" => '${{ secrets.CG_MYSQL_PASSWORD }}'," >> cairnsgamesconfig.php
+          echo "    \"database\" => '${{ secrets.CG_MYSQL_DATABASE }}'" >> cairnsgamesconfig.php
+          echo ");" >> cairnsgamesconfig.php
+          echo "" >> cairnsgamesconfig.php
+          echo "?>" >> cairnsgamesconfig.php
+
 
       - name: Generate babygo config.php
         working-directory: ./php

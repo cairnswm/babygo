@@ -4,6 +4,9 @@ include_once dirname(__FILE__)."/cairnsgamesconfig.php";
 $mysqli = null;
 $writeStatementLog = false;
 
+echo "===========Cairns Games DB Connection====================<br>";
+var_dump($cairnsgamesconfig);
+
 if ($mysqli == null) {
   $mysqli = mysqli_connect($cairnsgamesconfig["server"], $cairnsgamesconfig["username"], $cairnsgamesconfig["password"], $cairnsgamesconfig["database"]);
   if (mysqli_connect_errno()) {

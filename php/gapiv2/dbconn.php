@@ -2,12 +2,16 @@
 
 include_once __DIR__ . "/../babygoconfig.php";
 
+var_dump($babygoconfig);
+
+echo "CONNECT: ", $babygoconfig["server"], $babygoconfig["username"], $babygoconfig["password"], $babygoconfig["database"];
+
 // Create a global $gapiconn exists for the MySQL connection
 global $gapiconn;
 $gapiconn = new mysqli($babygoconfig["server"], $babygoconfig["username"], $babygoconfig["password"], $babygoconfig["database"]);
 
 if ($gapiconn->connect_error) {
-    die("Connection failed: " . $gapiconn->connect_error);
+    die("Connection failed for GAPIv2: " . $gapiconn->connect_error);
 }
 
 $gapiconn->set_charset("utf8mb4");
