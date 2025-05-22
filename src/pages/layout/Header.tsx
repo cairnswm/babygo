@@ -15,7 +15,7 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const unreadCount = getUnreadCount();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,6 +30,11 @@ const Header: React.FC = () => {
     e.preventDefault();
     setSearchTerm(searchValue);
     navigate("/app");
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
   };
 
   const toggleMenu = () => {
@@ -105,7 +110,7 @@ const Header: React.FC = () => {
               )}
             </Link>
           )}
-          <DropdownMenu userName={user?.name} onLogout={() => {}} />
+          <DropdownMenu userName={user?.name} onLogout={handleLogout} />
           {/* Mobile menu button */}
           <button
             className="md:hidden text-gray-700 focus:outline-none"
@@ -119,7 +124,6 @@ const Header: React.FC = () => {
       {/* Mobile menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 py-4 px-4 shadow-lg">
-
           <nav className="flex flex-col space-y-3">
             <Link
               to="/"
@@ -142,7 +146,6 @@ const Header: React.FC = () => {
             >
               Pricing
             </Link>
-           
           </nav>
         </div>
       )}

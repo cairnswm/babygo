@@ -201,13 +201,13 @@ const AuthenticationProvider: React.FC<AuthenticationProviderProps> = ({
   }, [googleAccessToken, getGoogleUser]);
 
   const logout = () => {
+    console.log("============ LOGOUT ============");
     if (user?.mastertoken) {
       validateToken(user.mastertoken);
     } else {
       setgoogleAccessToken(undefined);
       setUser(undefined);
       settoken(undefined);
-      window.location.hash = "#";
       localStorage.removeItem(`cg.${tenant}.auth`);
     }
   };

@@ -28,8 +28,22 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ userName, onLogout }) => {
     setIsDropdownOpen(false);
   };
 
+  const handleLogin = () => {
+    navigate("/home");
+  }
+
   if (!userName) {
-    return null; 
+    return (    <div className="relative" ref={dropdownRef}>
+      <button
+        className="px-1 py-2 text-sm font-medium text-gray-700 rounded shadow-sm flex items-center space-x-2"
+        onClick={() => handleLogin()}
+      >
+        <span className="flex items-center space-x-2">
+          <PersonCircle size={24} />
+          <span className="hidden sm:inline">Login</span>
+        </span>
+      </button>
+      </div>); 
   }
 
   return (
