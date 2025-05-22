@@ -23,20 +23,20 @@ jobs:
         run: |
           echo "<?php" > cairnsgamesconfig.php
           echo "" >> cairnsgamesconfig.php
-          echo "\$host = '${{ vars.CG_MYSQL_HOST }}';" >> cairnsgamesconfig.php
-          echo "\$user = '${{ vars.CG_MYSQL_USERNAME }}';" >> cairnsgamesconfig.php
+          echo "\$host = '${{ secrets.CG_MYSQL_HOST }}';" >> cairnsgamesconfig.php
+          echo "\$user = '${{ secrets.CG_MYSQL_USERNAME }}';" >> cairnsgamesconfig.php
           echo "\$password = '${{ secrets.CG_MYSQL_PASSWORD }}';" >> cairnsgamesconfig.php
-          echo "\$database = '${{ vars.CG_MYSQL_DATABASE }}';" >> cairnsgamesconfig.php
+          echo "\$database = '${{ secrets.CG_MYSQL_DATABASE }}';" >> cairnsgamesconfig.php
 
       - name: Generate babygo config.php
         working-directory: ./php/api
         run: |
           echo "<?php" > babygoconfig.php
           echo "" >> babygoconfig.php
-          echo "\$host = '${{ vars.MYSQL_HOST }}';" >> babygoconfig.php
-          echo "\$user = '${{ vars.MYSQL_USERNAME }}';" >> babygoconfig.php
+          echo "\$host = '${{ secrets.MYSQL_HOST }}';" >> babygoconfig.php
+          echo "\$user = '${{ secrets.MYSQL_USERNAME }}';" >> babygoconfig.php
           echo "\$password = '${{ secrets.MYSQL_PASSWORD }}';" >> babygoconfig.php
-          echo "\$database = '${{ vars.MYSQL_DATABASE }}';" >> babygoconfig.php          
+          echo "\$database = '${{ secrets.MYSQL_DATABASE }}';" >> babygoconfig.php          
 
       - name: Deploy Site (dist/)
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
