@@ -11,6 +11,8 @@ const MyAdvertsPage: React.FC = () => {
 
   accessElf.track('My Advertisements Page');
 
+  console.log('My Advertisements Page', userAds);
+
   return (
     <div className="pt-24 pb-12">
       <div className="mx-auto px-4">
@@ -24,6 +26,10 @@ const MyAdvertsPage: React.FC = () => {
             Create New Ad
           </Link>
         </div>
+
+        <div className="mb-6">
+          There are {userAds.length} advertisements listed under your account.
+          </div>
 
         {userAds.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

@@ -89,8 +89,6 @@ function CreateData($config, $data)
     return $new_record;
 }
 
-
-
 function CreateDataBulk($config, $data)
 {
     global $gapiconn;
@@ -176,7 +174,6 @@ function CreateDataBulk($config, $data)
     return $new_records;
 }
 
-
 function UpdateData($config, $id, $data)
 {
 
@@ -210,6 +207,8 @@ function UpdateData($config, $id, $data)
         $config = $res[0];
         $updated_record = $res[1];
     } else {
+
+        // echo "UPDATE DATA: ", json_encode($data), "\n";
 
         // Build the update query// Filter $config['update'] to only include fields that exist in $data
         $updateFields = array_values(array_filter($config['update'], function ($field) use ($data) {

@@ -34,7 +34,9 @@ $babyGoConfig = [
         "tablename" => "adverts",
         "key" => "id",
         "select" => "getAdverts",
-        "create" => ["title", "description", "price", "item_condition", "category", "images", "location", "posted_date", "expiry_date", "priority", "premium_expiry_date", "views", "tags", "user_id", "status"],
+        "create" => ["title", "description", "price", "item_condition", "category", "images", "location", "posted_date", "expiry_date", "priority", "priority_expiry_date", "views", "tags", "user_id", "status"],
+        "update" => ["title", "description", "price", "item_condition", "category", "images", "location", "posted_date", "expiry_date", "priority", "priority_expiry_date", "views", "tags", "status"],
+        "beforecreate" => "beforeCreateAdvert",
     ],
     "user" => [
         "tablename" => "adverts",
@@ -198,15 +200,22 @@ function deleteApplication($fields)
     ];
 }
 
-function getAdverts()
+function getAdverts($config, $id)
 {
     global $gapiconn, $userid;
+    $params = [$userid, $id];
     $query = "SELECT 
         (SELECT COUNT(1) FROM user_favorites 
             WHERE user_favorites.ad_id = adverts.id AND user_id = ?) fav, 
         adverts.* FROM adverts
+        where (adverts.status not in ('deleted', 'expired', 'removed')
+        OR adverts.id = ?)
     ";
-    $adverts = executeSQL($query, [$userid], ["JSON" => ["images", "tags"]]);
+    if ($id) {
+        $query .= " AND adverts.id = ?";
+        $params[] = $id;
+    } 
+    $adverts = executeSQL($query, $params, ["JSON" => ["images", "tags"]]);
     return $adverts;
 }
 
@@ -215,6 +224,7 @@ function getMyAdverts()
     global $gapiconn, $userid;
     $query = "SELECT  * FROM adverts
         where user_id = ?
+        and status not in ('deleted', 'expired', 'removed')
     ";
     $adverts = executeSQL($query, [$userid], ["JSON" => ["images", "tags"]]);
 
@@ -289,4 +299,28 @@ function readMail($config, $fields)
     $stmt->close();
 
     return getMyMessages();
+}
+
+function beforeCreateAdvert($config, $fields)
+{
+    global $userid;
+    $fields["user_id"] = $userid;
+    $fields["posted_date"] = date("Y-m-d H:i:s");
+    $fields["expiry_date"] = date("Y-m-d H:i:s", strtotime("+30 days"));
+    if ($fields["priority"] == 1) {
+        $fields["priority_expiry_date"] = date("Y-m-d H:i:s", strtotime("+30 days"));
+    } else {
+        $fields["priority_expiry_date"] = null;
+    }
+    if ($fields["images"] == null) {
+        $fields["images"] = json_encode([]);
+    } else {
+        $fields["images"] = json_encode($fields["images"]);
+    }
+    if ($fields["tags"] == null) {
+        $fields["tags"] = json_encode([]);
+    } else {
+        $fields["tags"] = json_encode($fields["tags"]);
+    }
+    return [$config, $fields];
 }

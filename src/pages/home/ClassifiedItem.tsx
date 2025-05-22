@@ -4,6 +4,8 @@ import { ClassifiedAd } from "../../../project/src/types";
 import { Link, useNavigate } from "react-router-dom";
 import { useClassified } from "../../context/ClassifiedContext";
 import MessageIcon from "./MessageIcon";
+import { useAuth } from "../../auth/hooks/useAuth";
+import ConditionBadge from "../../components/ConditionBadge";
 
 interface ClassifiedItemProps {
   ad: ClassifiedAd;
@@ -23,6 +25,21 @@ const getConditionColor = (condition: string) => {
       return "bg-orange-100 text-orange-800";
     default:
       return "bg-gray-100 text-gray-800";
+  }
+};
+
+const getStatusBadge = (status: string) => {
+  switch (status) {
+    case "available":
+      return { color: "bg-green-100 text-green-800", text: "Available" };
+    case "pending":
+      return { color: "bg-yellow-100 text-yellow-800", text: "Pending" };
+    case "sold":
+      return { color: "bg-red-100 text-red-800", text: "Sold" };
+    case "removed":
+      return { color: "bg-gray-100 text-gray-800", text: "Removed" };
+    default:
+      return { color: "bg-gray-100 text-gray-800", text: status };
   }
 };
 
@@ -56,6 +73,7 @@ const ClassifiedItem: React.FC<ClassifiedItemProps> = ({ ad }) => {
   const { deleteAd, isCurrentUserAd, toggleFavorite } = useClassified();
   const navigate = useNavigate();
   const canEdit = isCurrentUserAd(ad.id);
+  const { user} = useAuth();
 
   const handleAdClick = () => {
     navigate(`/ad/${ad.id}`);
@@ -67,7 +85,7 @@ const ClassifiedItem: React.FC<ClassifiedItemProps> = ({ ad }) => {
     }
   };
 
-  if (ad.status === "removed") return null;
+  if (ad.status === "removed" && ad.user_id !== user?.id) return null;
 
   return (
     <div
@@ -77,10 +95,10 @@ const ClassifiedItem: React.FC<ClassifiedItemProps> = ({ ad }) => {
       onClick={handleAdClick}
     >
       {/* Sold Overlay */}
-      {ad.status === "sold" && (
+      {(ad.status === "sold" || ad.status === "removed") && (
         <div className="absolute inset-0 z-20 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white text-4xl font-bold py-2 px-8 rotate-[-35deg] shadow-lg opacity-90">
-            SOLD
+            {ad.status === "sold" ? "SOLD" : "REMOVED"}
           </div>
         </div>
       )}
@@ -88,19 +106,19 @@ const ClassifiedItem: React.FC<ClassifiedItemProps> = ({ ad }) => {
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
-          src={ad.images[0]}
+          src={"/" + (ad.images[0] ?? "NONE")}
           alt={ad.title}
           className={`w-full h-full object-cover transition duration-500 hover:scale-110 ${
-        ad.status === "sold" ? "opacity-50" : ""
+            ad.status === "sold" ? "opacity-50" : ""
           }`}
           onError={(e) => {
-        e.currentTarget.style.display = "none";
+            e.currentTarget.style.display = "none";
           }}
         />
         <button
           onClick={(e) => {
-        e.stopPropagation();
-        toggleFavorite(ad.id);
+            e.stopPropagation();
+            toggleFavorite(ad.id);
           }}
           className={`absolute top-2 left-2 bg-white bg-opacity-90 p-2 rounded-full hover:bg-opacity-100 transition text-gray-600`}
         >
@@ -108,10 +126,10 @@ const ClassifiedItem: React.FC<ClassifiedItemProps> = ({ ad }) => {
         </button>
         <div className="absolute top-2 right-2 flex items-center space-x-2">
           <MessageIcon adId={ad.id} />
-          {ad.priority && (
-        <div className="bg-gradient-to-r from-pink-500 to-blue-500 text-white text-xs font-medium px-2 py-1 rounded-full">
-          Priority
-        </div>
+          {ad.priority === 1 && (
+            <div className="bg-gradient-to-r from-pink-500 to-blue-500 text-white text-xs font-medium px-2 py-1 rounded-full">
+              Priority
+            </div>
           )}
         </div>
       </div>
@@ -120,7 +138,7 @@ const ClassifiedItem: React.FC<ClassifiedItemProps> = ({ ad }) => {
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-semibold text-gray-800 line-clamp-1">
-            {ad.id} {ad.title}
+            {ad.title}
           </h3>
           <span className="font-bold text-lg text-pink-600">R{ad.price}</span>
         </div>
@@ -130,13 +148,7 @@ const ClassifiedItem: React.FC<ClassifiedItemProps> = ({ ad }) => {
         </p>
 
         <div className="flex flex-wrap gap-2 mb-3">
-          <span
-            className={`text-xs px-2 py-1 rounded-full ${getConditionColor(
-              ad.condition
-            )}`}
-          >
-            {ad.condition}
-          </span>
+          <ConditionBadge condition={ad.item_condition} />
           <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full flex items-center">
             <Tag size={12} className="mr-1" />
             {ad.category}
@@ -155,7 +167,7 @@ const ClassifiedItem: React.FC<ClassifiedItemProps> = ({ ad }) => {
         <div className="flex justify-between items-center text-xs text-gray-500">
           <div className="flex items-center">
             <MapPin size={12} className="mr-1" />
-            {ad.location}
+            {ad.location} 
           </div>
           <span>{formatRelativeTime(ad.posted_date)}</span>
         </div>

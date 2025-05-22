@@ -26,6 +26,7 @@ import { useCachedItem } from "../../context/useCacheItem";
 import { REACT_APP_FILES } from "../../env";
 import { combineUrlAndPath } from "../../auth/utils/combineUrlAndPath";
 import MessageIcon from "../home/MessageIcon";
+import ConditionBadge from "../../components/ConditionBadge";
 
 const AdDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -50,6 +51,8 @@ const AdDetailsPage: React.FC = () => {
 
   const conversations = getConversationsForAd(Number(id));
   const hasMessages = conversations && conversations.length > 0;
+
+  const isMyAd = ad?.user_id === user?.id;
 
   const fetchSellerData = async (userId: string) => {
     const sellerData = await getSeller(userId);
@@ -122,8 +125,6 @@ const AdDetailsPage: React.FC = () => {
   useScrollToTop();
 
   if (!ad) {
-    //} || !seller) {
-    console.log("Data not found", ad, seller);
     return (
       <div className="pt-24 pb-12 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -199,6 +200,22 @@ const AdDetailsPage: React.FC = () => {
             )}
           </div>
 
+          {isMyAd && (
+            <div className="mb-4">
+                <div className="flex gap-4">
+                <button className="px-4 py-2 bg-blue-300 text-black rounded-lg hover:bg-blue-600 hover:text-white transition">
+                  Sold
+                </button>
+                <button className="px-4 py-2 bg-red-300 text-black rounded-lg hover:bg-red-600 hover:text-white transition">
+                  Remove
+                </button>
+                <button className="px-4 py-2 bg-yellow-300 text-black rounded-lg hover:bg-yellow-600 hover:text-white transition">
+                  Priority
+                </button>
+                </div>
+            </div>
+          )}
+
           {/* Main content */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Images */}
@@ -208,7 +225,7 @@ const AdDetailsPage: React.FC = () => {
                 onClick={() => setIsFullscreen(true)}
               >
                 <img
-                  src={ad.images[currentImageIndex]}
+                  src={"/"+ad.images[currentImageIndex] ?? ""}
                   alt={ad.title}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   onError={(e) => {
@@ -234,7 +251,7 @@ const AdDetailsPage: React.FC = () => {
                       onClick={() => setCurrentImageIndex(index)}
                     >
                       <img
-                        src={image}
+                        src={"/"+image}
                         alt={`${ad.title} - ${index + 1}`}
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -267,21 +284,7 @@ const AdDetailsPage: React.FC = () => {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <span
-                  className={`text-sm px-3 py-1 rounded-full ${
-                    ad.condition === "New"
-                      ? "bg-green-100 text-green-800"
-                      : ad.condition === "Like New"
-                      ? "bg-teal-100 text-teal-800"
-                      : ad.condition === "Good"
-                      ? "bg-blue-100 text-blue-800"
-                      : ad.condition === "Fair"
-                      ? "bg-yellow-100 text-yellow-800"
-                      : "bg-orange-100 text-orange-800"
-                  }`}
-                >
-                  {ad.condition}
-                </span>
+                <ConditionBadge condition={ad.item_condition} />
                 <span className="text-sm bg-gray-100 text-gray-800 px-3 py-1 rounded-full flex items-center">
                   <Tag size={14} className="mr-1" />
                   {ad.category}

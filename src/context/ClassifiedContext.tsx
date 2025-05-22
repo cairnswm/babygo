@@ -33,6 +33,7 @@ interface ClassifiedContextType {
   isCurrentUserAd: (adId: string) => boolean;
   toggleFavorite: (id: string) => void;
   getSeller: (id: number | string) => Promise<any>;
+  changeAdStatus: (id: string, newStatus: string) => void;
 }
 
 const ClassifiedContext = createContext<ClassifiedContextType | undefined>(
@@ -43,10 +44,9 @@ export const ClassifiedProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [ads, setAds] = useState<ClassifiedAd[]>([]);
-  // const [ads, setAds] = useState<ClassifiedAd[]>(classifiedAds);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [myAdverts, setMyAdverts] = useState([]);
+  const [myAdverts, setMyAdverts] = useState<ClassifiedAd[]>([]);
   const { user, token } = useAuth();
   const { tenant } = useTenant();
 
@@ -91,6 +91,7 @@ export const ClassifiedProvider: React.FC<{ children: ReactNode }> = ({
     )
       .then((res) => res.json())
       .then((data) => setMyAdverts(data));
+
     fetch(combineUrlAndPath(REACT_APP_BABYGO_API, `api/api.php/adverts`), {
       headers,
     })
@@ -111,17 +112,38 @@ export const ClassifiedProvider: React.FC<{ children: ReactNode }> = ({
   });
 
   // Add a new ad
-  const addNewAd = (
+  const addNewAd = async (
     adData: Omit<ClassifiedAd, "id" | "posted_date" | "sellerName" | "userId">
   ) => {
-    const newAd: ClassifiedAd = {
+    const newAd = {
       ...adData,
-      id: `ad-${Date.now()}`,
-      posted_date: new Date().toISOString(),
-      sellerName: "Current User", // In a real app, this would come from auth
-      userId: CURRENT_USER_ID,
+      item_condition: adData.condition,
+      location: adData.location ?? "Unknown", // Default location
+      priority: 0, // Default priority
+      tags: [], // Default tags
     };
-    setAds((prevAds) => [newAd, ...prevAds]);
+
+    try {
+      const response = await fetch(
+        combineUrlAndPath(REACT_APP_BABYGO_API, `api/api.php/adverts`),
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify(newAd),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to add new ad");
+      }
+
+      const savedAd = await response.json();
+      
+      setAds(refreshAdverts(ads, savedAd));
+      setMyAdverts(refreshAdverts(myAdverts, savedAd));   
+    } catch (error) {
+      console.error("Error adding new ad:", error);
+    }
   };
 
   // Update an existing ad
@@ -148,6 +170,43 @@ export const ClassifiedProvider: React.FC<{ children: ReactNode }> = ({
     setAds((prevAds) =>
       prevAds.filter((ad) => !(ad.id === id && ad.userId === CURRENT_USER_ID))
     );
+  };
+
+  const refreshAdverts = (ads: ClassifiedAd[], newAds: ClassifiedAd[]): ClassifiedAd[] => {
+    const updatedAds = ads.map((ad) => {
+      const matchingAd = newAds.find((newAd) => newAd.id === ad.id);
+      return matchingAd ? matchingAd : ad;
+    });
+    const newAdIds = newAds.map((newAd) => newAd.id);
+    const nonDuplicateNewAds = newAds.filter((newAd) => !ads.some((ad) => ad.id === newAd.id));
+    return [...updatedAds, ...nonDuplicateNewAds];
+  };
+
+  // Change ad status
+  const changeAdStatus = async (id: string, newStatus: string) => {
+    try {
+      fetch(
+        combineUrlAndPath(REACT_APP_BABYGO_API, `api/api.php/adverts/${id}`),
+        {
+          method: "PUT",
+          headers,
+          body: JSON.stringify({ status: newStatus }),
+        }
+      )
+        .then((response) => {
+          if (!response.ok) throw new Error("Failed to update status");
+          return response.json();
+        })
+        .then((updatedAds) => {
+          setAds(refreshAdverts(ads, updatedAds));
+          setMyAdverts(refreshAdverts(myAdverts, updatedAds));          
+        })
+        .catch((error) => {
+          console.error("Error updating ad status", error);
+        });
+    } catch (e) {
+      console.error("Error updating ad status", e);
+    }
   };
 
   // Check if an ad belongs to the current user
@@ -182,6 +241,7 @@ export const ClassifiedProvider: React.FC<{ children: ReactNode }> = ({
     isCurrentUserAd,
     toggleFavorite,
     getSeller,
+    changeAdStatus,
   };
 
   return (

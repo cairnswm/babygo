@@ -3,14 +3,14 @@ export interface ClassifiedAd {
   title: string;
   description: string;
   price: number;
-  condition: 'New' | 'Like New' | 'Good' | 'Fair' | 'Poor';
+  item_condition: 'New' | 'Like New' | 'Good' | 'Fair' | 'Poor';
   category: string;
   images: string[];
   location: string;
   posted_date: string;
-  priority: boolean; // premium
-  premiumExpiryDate?: string; // set only if priority = true, default 7 days
-  expiryDate: string; // default 30 days from posted_date
+  priority: number; 
+  priority_expiry_date?: string; 
+  expiry_date: string; 
   views: number;
   tags?: string[];
   user_id: string;
