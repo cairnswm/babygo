@@ -225,7 +225,7 @@ const AdDetailsPage: React.FC = () => {
                 onClick={() => setIsFullscreen(true)}
               >
                 <img
-                  src={"/"+ad.images[currentImageIndex] ?? ""}
+                  src={"/"+ad.images[currentImageIndex]}
                   alt={ad.title}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   onError={(e) => {

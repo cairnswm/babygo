@@ -80,6 +80,7 @@ export const ClassifiedProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   useEffect(() => {
+    if (!user) return;
     fetch(
       combineUrlAndPath(
         REACT_APP_BABYGO_API,
