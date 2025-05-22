@@ -108,12 +108,27 @@ function SelectData($config, $id = null)
             $stmt->bind_param($types, ...$params);
         }
         $stmt->execute();
-        $result = $stmt->get_result();
-        $rows = [];
-        while ($row = $result->fetch_assoc()) {
-            $rows[] = $row;
+        $meta = $stmt->result_metadata();
+        $fields = $meta->fetch_fields();
+        $row = [];
+        $rowReferences = [];
+
+        foreach ($fields as $field) {
+            $rowReferences[] = &$row[$field->name];
         }
+
+        call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+        $rows = [];
+        while ($stmt->fetch()) {
+            $rows[] = array_map(function ($value) {
+                return $value;
+            }, $row);
+        }
+
         $stmt->close();
+
+        return $rows;
     }
 
     // echo "Query: $query\n";

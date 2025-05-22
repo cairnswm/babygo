@@ -62,8 +62,24 @@ function executeSQL($sql, $params = [], $options = [])
 
     // Check whether the statement returns a result set
     if ($stmt->field_count > 0) {
-        $result = $stmt->get_result();
-        $rows = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $meta = $stmt->result_metadata();
+        $fields = $meta->fetch_fields();
+        $row = [];
+        $rowReferences = [];
+
+        foreach ($fields as $field) {
+            $rowReferences[] = &$row[$field->name];
+        }
+
+        call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+        $rows = [];
+        while ($stmt->fetch()) {
+            $rows[] = array_map(function ($value) {
+                return $value;
+            }, $row);
+        }
+
         $stmt->close();
 
         if (isset($options["JSON"])) {

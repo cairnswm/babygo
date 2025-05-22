@@ -28,11 +28,24 @@ ORDER BY
     $stmt = $gapiconn->prepare($query);
     $stmt->bind_param('s', $config['where']['link_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    $meta = $stmt->result_metadata();
+    $fields = $meta->fetch_fields();
+    $row = [];
+    $rowReferences = [];
+
+    foreach ($fields as $field) {
+        $rowReferences[] = &$row[$field->name];
     }
+
+    call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $rows[] = array_map(function ($value) {
+            return $value;
+        }, $row);
+    }
+
     $stmt->close();
 
     return $rows;
@@ -68,11 +81,24 @@ ORDER BY l.created_at DESC;";
     $days = 30;
     $stmt->bind_param('ss', $days, $config['where']['campaign_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    $meta = $stmt->result_metadata();
+    $fields = $meta->fetch_fields();
+    $row = [];
+    $rowReferences = [];
+
+    foreach ($fields as $field) {
+        $rowReferences[] = &$row[$field->name];
     }
+
+    call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $rows[] = array_map(function ($value) {
+            return $value;
+        }, $row);
+    }
+
     $stmt->close();
 
     return $rows;
@@ -167,11 +193,24 @@ ORDER BY 3 desc;";
     $stmt = $gapiconn->prepare($query);
     $stmt->bind_param('i', $config['where']['link_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    $meta = $stmt->result_metadata();
+    $fields = $meta->fetch_fields();
+    $row = [];
+    $rowReferences = [];
+
+    foreach ($fields as $field) {
+        $rowReferences[] = &$row[$field->name];
     }
+
+    call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $rows[] = array_map(function ($value) {
+            return $value;
+        }, $row);
+    }
+
     $stmt->close();
 
     return $rows;
@@ -203,11 +242,24 @@ ORDER BY dr.visitDate;";
     $stmt = $gapiconn->prepare($query);
     $stmt->bind_param('iii', $config['where']['link_id'], $config['where']['link_id'],   $config['where']['link_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    $meta = $stmt->result_metadata();
+    $fields = $meta->fetch_fields();
+    $row = [];
+    $rowReferences = [];
+
+    foreach ($fields as $field) {
+        $rowReferences[] = &$row[$field->name];
     }
+
+    call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $rows[] = array_map(function ($value) {
+            return $value;
+        }, $row);
+    }
+
     $stmt->close();
 
     return $rows;

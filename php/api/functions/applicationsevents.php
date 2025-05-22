@@ -23,11 +23,24 @@ ORDER BY ip_last_30_days DESC;";
     $stmt = $gapiconn->prepare($query);
     $stmt->bind_param('s', $config['where']['application_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    $meta = $stmt->result_metadata();
+    $fields = $meta->fetch_fields();
+    $row = [];
+    $rowReferences = [];
+
+    foreach ($fields as $field) {
+        $rowReferences[] = &$row[$field->name];
     }
+
+    call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $rows[] = array_map(function ($value) {
+            return $value;
+        }, $row);
+    }
+
     $stmt->close();
 
     return $rows;
@@ -58,11 +71,24 @@ GROUP BY a.id;";
     $stmt = $gapiconn->prepare($query);
     $stmt->bind_param('ss', $config['where']['user_id'], $config['where']['user_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    $meta = $stmt->result_metadata();
+    $fields = $meta->fetch_fields();
+    $row = [];
+    $rowReferences = [];
+
+    foreach ($fields as $field) {
+        $rowReferences[] = &$row[$field->name];
     }
+
+    call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $rows[] = array_map(function ($value) {
+            return $value;
+        }, $row);
+    }
+
     $stmt->close();
 
     return $rows;
@@ -93,11 +119,24 @@ LIMIT 100;";
     $stmt = $gapiconn->prepare($query);
     $stmt->bind_param('s', $config['where']['application_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    $meta = $stmt->result_metadata();
+    $fields = $meta->fetch_fields();
+    $row = [];
+    $rowReferences = [];
+
+    foreach ($fields as $field) {
+        $rowReferences[] = &$row[$field->name];
     }
+
+    call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $rows[] = array_map(function ($value) {
+            return $value;
+        }, $row);
+    }
+
     $stmt->close();
 
     return $rows;
@@ -117,11 +156,24 @@ function getSiteEvents($config, $id)
     $stmt = $gapiconn->prepare($query);
     $stmt->bind_param('s', $config['where']['application_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    $meta = $stmt->result_metadata();
+    $fields = $meta->fetch_fields();
+    $row = [];
+    $rowReferences = [];
+
+    foreach ($fields as $field) {
+        $rowReferences[] = &$row[$field->name];
     }
+
+    call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $rows[] = array_map(function ($value) {
+            return $value;
+        }, $row);
+    }
+
     $stmt->close();
 
     return $rows;

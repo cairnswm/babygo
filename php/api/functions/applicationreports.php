@@ -17,11 +17,24 @@ ORDER BY visitDate;";
     $stmt = $gapiconn->prepare($query);
     $stmt->bind_param('s', $config['where']['application_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    $meta = $stmt->result_metadata();
+    $fields = $meta->fetch_fields();
+    $row = [];
+    $rowReferences = [];
+
+    foreach ($fields as $field) {
+        $rowReferences[] = &$row[$field->name];
     }
+
+    call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $rows[] = array_map(function ($value) {
+            return $value;
+        }, $row);
+    }
+
     $stmt->close();
 
     return $rows;
@@ -42,11 +55,24 @@ function getPageEvents($config, $id)
     $stmt = $gapiconn->prepare($query);
     $stmt->bind_param('s', $config['where']['application_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    $meta = $stmt->result_metadata();
+    $fields = $meta->fetch_fields();
+    $row = [];
+    $rowReferences = [];
+
+    foreach ($fields as $field) {
+        $rowReferences[] = &$row[$field->name];
     }
+
+    call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $rows[] = array_map(function ($value) {
+            return $value;
+        }, $row);
+    }
+
     $stmt->close();
 
     return $rows;
@@ -68,11 +94,24 @@ ORDER BY visitDate;";
     $stmt = $gapiconn->prepare($query);
     $stmt->bind_param('s', $config['where']['application_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    $meta = $stmt->result_metadata();
+    $fields = $meta->fetch_fields();
+    $row = [];
+    $rowReferences = [];
+
+    foreach ($fields as $field) {
+        $rowReferences[] = &$row[$field->name];
     }
+
+    call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $rows[] = array_map(function ($value) {
+            return $value;
+        }, $row);
+    }
+
     $stmt->close();
 
     return $rows;
@@ -93,11 +132,24 @@ function getItemEvents($config, $id)
     $stmt = $gapiconn->prepare($query);
     $stmt->bind_param('s', $config['where']['application_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    $meta = $stmt->result_metadata();
+    $fields = $meta->fetch_fields();
+    $row = [];
+    $rowReferences = [];
+
+    foreach ($fields as $field) {
+        $rowReferences[] = &$row[$field->name];
     }
+
+    call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $rows[] = array_map(function ($value) {
+            return $value;
+        }, $row);
+    }
+
     $stmt->close();
 
     return $rows;
@@ -119,11 +171,24 @@ ORDER BY visitDate;";
     $stmt = $gapiconn->prepare($query);
     $stmt->bind_param('s', $config['where']['application_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    $meta = $stmt->result_metadata();
+    $fields = $meta->fetch_fields();
+    $row = [];
+    $rowReferences = [];
+
+    foreach ($fields as $field) {
+        $rowReferences[] = &$row[$field->name];
     }
+
+    call_user_func_array([$stmt, 'bind_result'], $rowReferences);
+
+    $rows = [];
+    while ($stmt->fetch()) {
+        $rows[] = array_map(function ($value) {
+            return $value;
+        }, $row);
+    }
+
     $stmt->close();
 
     return $rows;
