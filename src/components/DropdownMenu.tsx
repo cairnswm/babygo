@@ -4,7 +4,7 @@ import { CaretDownFill, CaretUpFill, PersonCircle } from "../icons";
 import { ShoppingBag } from "lucide-react";
 
 interface DropdownMenuProps {
-  userName: string;
+  userName?: string;
   onLogout: () => void;
 }
 
@@ -27,6 +27,10 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ userName, onLogout }) => {
     callback();
     setIsDropdownOpen(false);
   };
+
+  if (!userName) {
+    return null; 
+  }
 
   return (
     <div className="relative" ref={dropdownRef}>

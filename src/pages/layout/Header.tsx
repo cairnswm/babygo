@@ -105,7 +105,7 @@ const Header: React.FC = () => {
               )}
             </Link>
           )}
-          <DropdownMenu userName={user.name} onLogout={() => {}} />
+          <DropdownMenu userName={user?.name} onLogout={() => {}} />
           {/* Mobile menu button */}
           <button
             className="md:hidden text-gray-700 focus:outline-none"
