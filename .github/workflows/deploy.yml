@@ -33,10 +33,14 @@ jobs:
         run: |
           echo "<?php" > babygoconfig.php
           echo "" >> babygoconfig.php
-          echo "\$host = '${{ secrets.MYSQL_HOST }}';" >> babygoconfig.php
-          echo "\$user = '${{ secrets.MYSQL_USERNAME }}';" >> babygoconfig.php
-          echo "\$password = '${{ secrets.MYSQL_PASSWORD }}';" >> babygoconfig.php
-          echo "\$database = '${{ secrets.MYSQL_DATABASE }}';" >> babygoconfig.php          
+          echo "\$babygoconfig = array(" >> babygoconfig.php
+          echo "    \"server\" => '${{ secrets.MYSQL_HOST }}'," >> babygoconfig.php
+          echo "    \"username\" => '${{ secrets.MYSQL_USERNAME }}'," >> babygoconfig.php
+          echo "    \"password\" => '${{ secrets.MYSQL_PASSWORD }}'," >> babygoconfig.php
+          echo "    \"database\" => '${{ secrets.MYSQL_DATABASE }}'" >> babygoconfig.php
+          echo ");" >> babygoconfig.php
+          echo "" >> babygoconfig.php
+          echo "?>" >> babygoconfig.php 
 
       - name: Deploy Site (dist/)
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
