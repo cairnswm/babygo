@@ -2,10 +2,6 @@
 
 include_once __DIR__ . "/../babygoconfig.php";
 
-var_dump($babygoconfig);
-
-echo "CONNECT: ", $babygoconfig["server"], $babygoconfig["username"], $babygoconfig["password"], $babygoconfig["database"];
-
 // Create a global $gapiconn exists for the MySQL connection
 global $gapiconn;
 $gapiconn = new mysqli($babygoconfig["server"], $babygoconfig["username"], $babygoconfig["password"], $babygoconfig["database"]);
