@@ -6,7 +6,7 @@ let FILES = "https://cairnsgames.co.za/files/";
 let FLAGS = "https://cairnsgames.co.za/php/flags/";
 let PAYWEB3 = "http://cairnsgames.co.za/php/payweb3/";
 let SUBSCRIPTIONS = "https://cairnsgames.co.za/php/subscriptions/";
-let BABYGO = "https://babygo.co.za/php/";
+let BABYGO = "https://babygo.cairns.co.za/php/";
 
 if (typeof process !== "undefined" && process?.env) {
   TENANT = process.env.REACT_APP_TENANT_API;
